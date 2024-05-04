@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class NoteController implements CommandLineRunner, PersonDAO {
@@ -102,7 +100,7 @@ public class NoteController implements CommandLineRunner, PersonDAO {
 
     }
 
-    @GetMapping("listenote")
+    /* @GetMapping("listenote")
     public String listenote(){
         String a = "";
         a += "<div style='color:green; background-color:yellow;'>";
@@ -139,7 +137,7 @@ public class NoteController implements CommandLineRunner, PersonDAO {
         a += "</div>";
         a += "<a href='/Administrateur'>Menu</a>";
         return a;
-    }
+    } */
 
     @GetMapping("/deletenote")
     public String deletenote(){
@@ -171,7 +169,7 @@ public class NoteController implements CommandLineRunner, PersonDAO {
         return a;
     }
 
-    @GetMapping("listenotebis")
+    /* @GetMapping("listenotebis")
     public String listenotebis(){
         String a = "";
         a += "<div style='color:green; background-color:yellow;'>";
@@ -208,6 +206,6 @@ public class NoteController implements CommandLineRunner, PersonDAO {
         a += "</div>";
         a += "<a href='/testquiz'>Menu</a>";
         return a;
-    }
+    } */
 
 }

@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AutreController implements CommandLineRunner, PersonDAO{
@@ -201,7 +199,7 @@ public class AutreController implements CommandLineRunner, PersonDAO{
         return a;
     }
 
-    @PostMapping("/resultat") // Afficher le résultat du quiz
+    /* @PostMapping("/resultat") // Afficher le résultat du quiz
     public String resultat(String... nom){
         int a = 0;
         int b = 0;
@@ -303,6 +301,6 @@ public class AutreController implements CommandLineRunner, PersonDAO{
         ba += "</div>";
         ba += "<br><a href='/testquiz'>Menu</a>";
         return ba;
-    }
+    } */
 
 }

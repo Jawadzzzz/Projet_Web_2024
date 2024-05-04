@@ -197,7 +197,9 @@ public class JoueurController implements CommandLineRunner, PersonDAO {
         String a = "";
         a += "<div style='color:green; background-color:yellow;'>";
         try{
-            String sql = "DELETE FROM joueur WHERE id_joueur = ?";
+            String sql = "DELETE FROM note WHERE id_joueur = ?";
+            jdbcTemplate.update(sql, Integer.parseInt(nom));
+            sql = "DELETE FROM joueur WHERE id_joueur = ?";
             jdbcTemplate.update(sql, Integer.parseInt(nom));
             a += "<h3>Vous avez supprimé un joueur</h3>";
         }
