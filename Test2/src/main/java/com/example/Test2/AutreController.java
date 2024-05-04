@@ -8,18 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AutreController implements CommandLineRunner, PersonDAO{
-    @Override
-    public Student getPersonById(int id) {
-        return null;
-    }
 
-    @Override
-    public List<Student> finds() {
-        return null;
-    }
 
     @Override
     public Joueur getJoueurById(int id) { // Trouver un joueur selon son Id
@@ -268,6 +261,29 @@ public class AutreController implements CommandLineRunner, PersonDAO{
             bac *= 100.0;
             sql = "INSERT INTO note (id_note, num, id_sujet) VALUES (?, ?, ?);";
             rows = jdbcTemplate.update(sql, ab, bac, getQuestionById(d).getSujet());
+
+            List<Double> classement = new ArrayList<Double>();
+            for (int i = 0; i < findNote().size(); i++){
+                classement.add(findNote().get(i).getNum());
+            }
+            Collections.sort(classement);
+            Collections.reverse(classement);
+
+            int rang = 1;
+
+            List<Integer> liste = new ArrayList<Integer>();
+            for (int j = 0; j < classement.size(); j++) {
+                for (int i = 0; i < findNote().size(); i++) {
+                    if (findNote().get(i).getNum() == classement.get(j) && !(liste.contains(findNote().get(i).getId_note()))) {
+
+                        ba += "<br>Rang : " + String.valueOf(rang) + "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Joueur : " + String.valueOf(findNote().get(i).getId_joueur()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                        liste.add(findNote().get(i).getId_note());
+                        rang += 1;
+                    }
+                    // ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                }
+            }
+
         }
         catch (Exception e){
             rows = 0;
@@ -281,9 +297,9 @@ public class AutreController implements CommandLineRunner, PersonDAO{
         else{
             ba += "<h1>Erreur</h1>";
         }
-        for (int i = 0; i < findNote().size(); i++){
-            ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
-        }
+        //for (int i = 0; i < findNote().size(); i++){
+          //  ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+        //}
         ba += "</div>";
         ba += "<br><a href='/testquiz'>Menu</a>";
         return ba;

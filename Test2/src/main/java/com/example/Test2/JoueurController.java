@@ -14,15 +14,7 @@ import java.util.List;
 
 public class JoueurController implements CommandLineRunner, PersonDAO {
 
-    @Override
-    public Student getPersonById(int id) {
-        return null;
-    }
 
-    @Override
-    public List<Student> finds() {
-        return null;
-    }
 
     @Override
     public Joueur getJoueurById(int id) { // Trouver un joueur selon son Id

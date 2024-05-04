@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootApplication
@@ -26,6 +27,8 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
     public StudentController(){
 
     }
+
+    static int cookie;
 
     static List<String> liste = new ArrayList<>();
 
@@ -136,6 +139,7 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
             for (int i = 0; i < joueur.size(); i++){
                 if (joueur.get(i).getNom().equals(myName)){
                     a += "<h3>Vous êtes authentifiés</h3><a href='/testquiz'>Menu</a><br>";
+                    cookie = joueur.get(i).getId_joueur();
                     break;
                 }
                 else if (!(joueur.get(i).getNom().equals(myName)) && i == joueur.size() - 1){
@@ -458,9 +462,33 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         a += "<div style='color:green; background-color:yellow;'>";
         List<Note> note = findNote();
         try{
-            for (int i = 0; i < note.size(); i++){
-                a += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+
+            List<Double> classement = new ArrayList<Double>();
+            for (int i = 0; i < findNote().size(); i++){
+                classement.add(findNote().get(i).getNum());
             }
+            Collections.sort(classement);
+            Collections.reverse(classement);
+
+            List<Integer> liste = new ArrayList<Integer>();
+            int rang;
+            for (int k = 0; k < findSujet().size(); k++){
+                rang = 1;
+                a += "<br><h3>Sujet " + String.valueOf(findSujet().get(k).getId_sujet()) + "</h3><br>";
+                for (int j = 0; j < classement.size(); j++) {
+                    for (int i = 0; i < findNote().size(); i++) {
+                        if (findNote().get(i).getNum() == classement.get(j) && !(liste.contains(findNote().get(i).getId_note())) && findNote().get(i).getId_sujet() == findSujet().get(k).getId_sujet()) {
+                            a += "<br>Rang : " + String.valueOf(rang) + "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Joueur : " + String.valueOf(findNote().get(i).getId_joueur()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                            liste.add(findNote().get(i).getId_note());
+                            rang += 1;
+                        }
+                        // ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                    }
+                }
+            }
+            //for (int i = 0; i < note.size(); i++){
+              //  a += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+            //}
         }
         catch (Exception e){
             a += "Vide<br>";
@@ -506,9 +534,12 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         String a = "";
         a += "<div style='color:green; background-color:yellow;'>";
         try{
-            String sql = "DELETE FROM joueur WHERE id_joueur = ?";
+            String sql = "DELETE FROM note WHERE id_joueur = ?";
+            jdbcTemplate.update(sql, Integer.parseInt(nom));
+            sql = "DELETE FROM joueur WHERE id_joueur = ?";
             jdbcTemplate.update(sql, Integer.parseInt(nom));
             a += "<h3>Vous avez supprimé un joueur</h3>";
+            cookie = 0;
         }
         catch (Exception e){
             a += "<h3>Une erreur s'est produite</h3>";
@@ -656,9 +687,45 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         a += "<div style='color:green; background-color:yellow;'>";
         List<Note> note = findNote();
         try{
-            for (int i = 0; i < note.size(); i++){
-                a += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+
+            if (cookie <= 0){
+                a += "<h3>Le serveur a planté</h3><head><meta http-equiv='refresh' content='2;URL=/index.html'></meta></head><br>";
             }
+
+            List<Double> classement = new ArrayList<Double>();
+            for (int i = 0; i < findNote().size(); i++){
+                classement.add(findNote().get(i).getNum());
+            }
+            Collections.sort(classement);
+            Collections.reverse(classement);
+
+            List<Integer> liste = new ArrayList<Integer>();
+            int rang;
+            for (int k = 0; k < findSujet().size(); k++){
+                rang = 1;
+                a += "<br><h3>Sujet " + String.valueOf(findSujet().get(k).getId_sujet()) + "</h3><br>";
+                for (int j = 0; j < classement.size(); j++) {
+                    for (int i = 0; i < findNote().size(); i++) {
+                        if (findNote().get(i).getNum() == classement.get(j) && !(liste.contains(findNote().get(i).getId_note())) && findNote().get(i).getId_sujet() == findSujet().get(k).getId_sujet()) {
+                            if (findNote().get(i).getId_joueur() == cookie){
+                                a += "<br>Rang : " + String.valueOf(rang) + "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br><b>Joueur : " + String.valueOf(findNote().get(i).getId_joueur()) + "</b><br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                            }
+                            else {
+                                a += "<br>Rang : " + String.valueOf(rang) + "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Joueur : " + String.valueOf(findNote().get(i).getId_joueur()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                            }
+
+                            liste.add(findNote().get(i).getId_note());
+                            rang += 1;
+                        }
+                        // ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                    }
+                }
+            }
+
+
+            //for (int i = 0; i < note.size(); i++){
+              //  a += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+            //}
         }
         catch (Exception e){
             a += "Vide<br>";
@@ -737,7 +804,7 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
                 for (int j = 0; j < b.size(); j++){
                     a += "function submit" + String.valueOf(abc + 1) + "(){" +
                             "cars[" + String.valueOf(i) + "] = document.getElementById('demo" + String.valueOf(abc + 1) + "').value;" +
-                            "document.getElementById('demo').innerHTML = `<form action='/resultat' method='POST'><input type='hidden' name='nom' value ='` + cars.toString() + `'><button type='submit'>Greet Me</button></form>`;}";
+                            "document.getElementById('demo').innerHTML = `<form action='/resultat' method='POST'><input type='hidden' name='nom' value ='` + cars.toString() + `' required><button type='submit'>Greet Me</button></form>`;}";
                     abc++;
                 }
             }
@@ -751,7 +818,7 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
                 a += "<h2>Reponse : </h2>";
                 b = jdbcTemplate.query("SELECT * FROM reponse WHERE id_question = ?", new Object[] { person.get(i).getId_question() }, new ReponseMapper());
                 for (int j = 0; j < b.size(); j++){
-                    a += "<pre><input name='demo" + String.valueOf(i + 1) + "' onclick='submit" + String.valueOf(abc + 1) + "();' id='demo" + String.valueOf(abc + 1) + "' type='radio' value = " + b.get(j).getId_reponse() + ">";
+                    a += "<pre><input name='demo" + String.valueOf(i + 1) + "' onclick='submit" + String.valueOf(abc + 1) + "();' id='demo" + String.valueOf(abc + 1) + "' type='radio' value = " + b.get(j).getId_reponse() + " required>";
                     a += "<label for='demo" + String.valueOf(abc + 1) + "'>" + b.get(j).getNom_reponse() + "</label></pre><br>";
                     abc++;
                 }
@@ -773,7 +840,7 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         int a = 0;
         int b = 0;
         int d = 0;
-        List<Note> listenote = findNote();
+        List<Note> listenote;
         String sql;
         int rows = 0;
         int ab = 0;
@@ -785,16 +852,27 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
 
         try{
 
+            for (String nm : nom){
+                if (Integer.parseInt(nm) != 0 && getReponseById(Integer.parseInt(nm)).getResultat() == 0){
+                    // ba += "a = " + String.valueOf(a);
+                    a++;
+                }
+                if (Integer.parseInt(nm) != 0){
+                    d = getReponseById(Integer.parseInt(nm)).getId_question();
+                }
+
+            }
+
+            if (cookie > 0){
+                rows = jdbcTemplate.update("DELETE FROM note WHERE id_sujet = " + String.valueOf(getQuestionById(d).getSujet()) + " AND id_joueur = " + String.valueOf(cookie) + ";");
+            }
+
+            listenote = findNote();
+
             for (int i = 0; i < findNote().size(); i++){
                 nombrenote.add(listenote.get(i).getId_note());
             }
 
-            for (String nm : nom){
-                if (Integer.parseInt(nm) != 0 && getReponseById(Integer.parseInt(nm)).getResultat() == 0){
-                    a++;
-                }
-                d = getReponseById(Integer.parseInt(nm)).getId_question();
-            }
             //ba += "<br>d = " + String.valueOf(d) + "<br>";
             //ba += "<br>c = " + String.valueOf(c.size()) + "<br>";
 
@@ -806,7 +884,9 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
                 }
             }
             // try {
-            rows = jdbcTemplate.update("DELETE FROM note WHERE id_sujet = " + String.valueOf(getQuestionById(d).getSujet()) + ";");
+            //if (cookie > 0){
+              //  rows = jdbcTemplate.update("DELETE FROM note WHERE id_sujet = " + String.valueOf(getQuestionById(d).getSujet()) + " AND id_joueur = " + String.valueOf(cookie) + ";");
+            //}
             //}
             // catch (Exception f){
 
@@ -826,12 +906,54 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
             bac *= 1.0;
             bac /= ((double) b * 1.0);
             bac *= 100.0;
-            sql = "INSERT INTO note (id_note, num, id_sujet) VALUES (?, ?, ?);";
-            rows = jdbcTemplate.update(sql, ab, bac, getQuestionById(d).getSujet());
+
+            if (cookie > 0){
+                sql = "INSERT INTO note (id_note, num, id_sujet, id_joueur) VALUES (?, ?, ?, ?);";
+                rows = jdbcTemplate.update(sql, ab, bac, getQuestionById(d).getSujet(), cookie);
+
+            }
+            else {
+                ba += "<h3>Le serveur a planté</h3><head><meta http-equiv='refresh' content='2;URL=/index.html'></meta></head><br>";
+            }
+            //sql = "INSERT INTO note (id_note, num, id_sujet, id_joueur) VALUES (?, ?, ?, ?);";
+            //rows = jdbcTemplate.update(sql, ab, bac, getQuestionById(d).getSujet(), cookie);
+
+            List<Double> classement = new ArrayList<Double>();
+            for (int i = 0; i < findNote().size(); i++){
+                classement.add(findNote().get(i).getNum());
+            }
+            Collections.sort(classement);
+            Collections.reverse(classement);
+            ba += "<h3>Classement</h3>";
+
+            List<Integer> liste = new ArrayList<Integer>();
+            int rang;
+            for (int k = 0; k < findSujet().size(); k++){
+                rang = 1;
+                ba += "<br><h3>Sujet " + String.valueOf(findSujet().get(k).getId_sujet()) + "</h3><br>";;
+                for (int j = 0; j < classement.size(); j++) {
+                    for (int i = 0; i < findNote().size(); i++) {
+                        if (findNote().get(i).getNum() == classement.get(j) && !(liste.contains(findNote().get(i).getId_note())) && findNote().get(i).getId_sujet() == findSujet().get(k).getId_sujet()) {
+                            if (findNote().get(i).getId_joueur() == cookie){
+                                ba += "<br>Rang : " + String.valueOf(rang) + "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br><b>Joueur : " + String.valueOf(findNote().get(i).getId_joueur()) + "</b><br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                            }
+                            else {
+                                ba += "<br>Rang : " + String.valueOf(rang) + "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Joueur : " + String.valueOf(findNote().get(i).getId_joueur()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                            }
+
+                            liste.add(findNote().get(i).getId_note());
+                            rang += 1;
+                        }
+                        // ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
+                    }
+                }
+            }
+
         }
         catch (Exception e){
             rows = 0;
             ba += String.valueOf(e);
+            ba += "<h1>Erreur</h1>";
         }
 
 
@@ -841,9 +963,8 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         else{
             ba += "<h1>Erreur</h1>";
         }
-        for (int i = 0; i < findNote().size(); i++){
-            ba += "<br>Id : " + String.valueOf(findNote().get(i).getId_note()) + "<br>Sujet : " + String.valueOf(findNote().get(i).getId_sujet()) + "<br>Note : " + String.valueOf(findNote().get(i).getNum()) + " %<br>";
-        }
+
+
         ba += "</div>";
         ba += "<br><a href='/testquiz'>Menu</a>";
         return ba;
@@ -891,12 +1012,13 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         }
 
         return a;
-    } */
+    }
+
 
     @Override
     public Student getPersonById(int id) {
         return jdbcTemplate.queryForObject("SELECT * FROM student WHERE id = ?", new Object[] { id }, new PersonMapper());
-    }
+    } */
 
     @Override
     public Joueur getJoueurById(int id) { // Trouver un joueur selon son Id
@@ -947,7 +1069,7 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
         a += "</div>";
         a += "</form>";
         return a;
-    } */
+    }
 
     @Override
     public List<Student> finds() {
@@ -957,7 +1079,7 @@ public class StudentController implements CommandLineRunner, PersonDAO  {
            ;
            """;
         return jdbcTemplate.query(sql,new PersonMapper());
-    }
+    } */
 
     @Override
     public List<Joueur> findjoueur() { // Lister tous les joueurs

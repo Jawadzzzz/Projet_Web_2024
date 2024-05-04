@@ -3,9 +3,9 @@ package com.example.Test2;
 import java.util.List;
 
 public interface PersonDAO {
-    Student getPersonById(int id);
+    //Student getPersonById(int id);
 
-    List<Student> finds();
+    // List<Student> finds();
 
     Joueur getJoueurById(int id);
 

@@ -9,7 +9,7 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_note;
 
-    private int num;
+    private double num;
     private int id_joueur;
     private int id_sujet;
 
@@ -26,7 +26,7 @@ public class Note {
         this.id_note = id_note;
     }
 
-    public int getNum() {
+    public double getNum() {
         return num;
     }
 

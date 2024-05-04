@@ -13,7 +13,7 @@ import java.util.List;
 
 public class QuestionController implements CommandLineRunner, PersonDAO {
 
-    @Override
+    /* @Override
     public Student getPersonById(int id) {
         return null;
     }
@@ -21,7 +21,7 @@ public class QuestionController implements CommandLineRunner, PersonDAO {
     @Override
     public List<Student> finds() {
         return null;
-    }
+    } */
 
     @Override
     public Joueur getJoueurById(int id) { // Trouver un joueur selon son Id
