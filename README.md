@@ -122,6 +122,7 @@ Pour créer une réponse, il faut saisir l'URL "localhost:8090/testreponse".
 Pour créer un joueur, il faut saisir l'URL "localhost:8090/testjoueur".
 
 Pour faire une partie de Quiz, il faut saisir l'URL "localhost:8090/testquiz".
+Attention, en tant que joueur, il ne faut pas saisir l'URL directement puisqu'il faut s'authentifier pour paramétrer le cookie permettant de réaliser le quiz.
 
 La page par défaut "localhost:8090" ou "localhost:8090/index.html" est la page de connexion pour le joueur.
 
