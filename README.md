@@ -2,7 +2,7 @@
 
 REGGANI Jawad
 
-NGUYEN Pha LUAN
+NGUYEN Pha Luan
 
 CAMARA Niamé
 
